@@ -1,0 +1,491 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+
+.container { padding: 1.5rem 0; }
+
+.tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.tab { 
+  padding: 8px 16px; border-radius: var(--border-radius-lg); 
+  border: 0.5px solid var(--color-border-secondary); 
+  background: var(--color-background-primary);
+  cursor: pointer; font-size: 14px; font-weight: 400;
+  color: var(--color-text-secondary);
+  transition: all 0.15s;
+}
+.tab.active { 
+  background: var(--color-background-secondary); 
+  color: var(--color-text-primary); 
+  border-color: var(--color-border-primary);
+  font-weight: 500;
+}
+
+.avatar-card { 
+  background: var(--color-background-primary); 
+  border: 0.5px solid var(--color-border-tertiary); 
+  border-radius: var(--border-radius-lg); 
+  overflow: hidden;
+}
+
+.avatar-header { 
+  display: flex; align-items: center; gap: 16px; 
+  padding: 1.25rem 1.5rem; 
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+}
+.avatar-pic { 
+  width: 56px; height: 56px; border-radius: 50%; 
+  display: flex; align-items: center; justify-content: center; 
+  font-size: 20px; font-weight: 500; flex-shrink: 0;
+}
+.avatar-info h2 { font-size: 17px; font-weight: 500; color: var(--color-text-primary); }
+.avatar-info p { font-size: 13px; color: var(--color-text-secondary); margin-top: 2px; }
+
+.stats-row { 
+  display: grid; grid-template-columns: repeat(3, 1fr); 
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+}
+.stat { 
+  padding: 0.875rem 1.25rem; text-align: center; 
+  border-right: 0.5px solid var(--color-border-tertiary);
+}
+.stat:last-child { border-right: none; }
+.stat-val { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+.stat-lbl { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+
+.section-title { 
+  font-size: 11px; font-weight: 500; text-transform: uppercase; 
+  letter-spacing: 0.06em; color: var(--color-text-tertiary); 
+  padding: 1rem 1.5rem 0.5rem;
+}
+
+.timeline { padding: 0 1.5rem 0.75rem; }
+.time-block { 
+  display: flex; gap: 12px; padding: 8px 0; 
+  border-bottom: 0.5px solid var(--color-border-tertiary); 
+  align-items: flex-start;
+}
+.time-block:last-child { border-bottom: none; }
+.time-tag { 
+  font-size: 11px; color: var(--color-text-tertiary); 
+  min-width: 54px; padding-top: 2px; flex-shrink: 0;
+}
+.time-content { flex: 1; }
+.time-label { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.time-desc { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; line-height: 1.5; }
+
+.mood { 
+  display: inline-block; font-size: 11px; padding: 2px 8px; 
+  border-radius: 20px; margin-left: 6px; font-weight: 500;
+}
+.mood-bad { background: #FCEBEB; color: #A32D2D; }
+.mood-good { background: #EAF3DE; color: #3B6D11; }
+.mood-ok { background: #FAEEDA; color: #854F0B; }
+
+.two-col { 
+  display: grid; grid-template-columns: 1fr 1fr; 
+  border-top: 0.5px solid var(--color-border-tertiary);
+}
+.col-section { padding: 1rem 1.5rem; }
+.col-section:first-child { border-right: 0.5px solid var(--color-border-tertiary); }
+
+.pill-list { display: flex; flex-direction: column; gap: 6px; margin-top: 0.5rem; }
+.pill { 
+  font-size: 12px; padding: 5px 10px; border-radius: var(--border-radius-md); 
+  border: 0.5px solid var(--color-border-tertiary); 
+  color: var(--color-text-secondary); line-height: 1.4;
+}
+.pill-bad { background: #FCEBEB; border-color: #F7C1C1; color: #793A3A; }
+.pill-good { background: #EAF3DE; border-color: #C0DD97; color: #3B6D11; }
+
+.quote-box { 
+  margin: 0.75rem 1.5rem; padding: 0.875rem 1rem; 
+  background: var(--color-background-secondary); 
+  border-radius: var(--border-radius-md); 
+  border-left: 3px solid var(--color-border-secondary);
+}
+.quote-box p { font-size: 13px; color: var(--color-text-secondary); font-style: italic; line-height: 1.6; }
+.quote-box span { font-size: 11px; color: var(--color-text-tertiary); display: block; margin-top: 4px; }
+
+.dream-box { 
+  margin: 0.75rem 1.5rem 1.25rem; padding: 0.875rem 1rem; 
+  background: var(--color-background-info); 
+  border-radius: var(--border-radius-md);
+}
+.dream-box p { font-size: 13px; color: var(--color-text-info); line-height: 1.5; }
+
+.hidden { display: none; }
+</style>
+
+<div class="container">
+
+<div class="tabs">
+  <button class="tab active" onclick="showAvatar(0)">Karim — Restaurant</button>
+  <button class="tab" onclick="showAvatar(1)">Nadia — Coiffure</button>
+  <button class="tab" onclick="showAvatar(2)">Patrick — Commerce</button>
+</div>
+
+<!-- AVATAR 1 : KARIM -->
+<div id="av0" class="avatar-card">
+  <div class="avatar-header">
+    <div class="avatar-pic" style="background:#FAEEDA;color:#854F0B;">KA</div>
+    <div class="avatar-info">
+      <h2>Karim Aït-Hamou, 41 ans</h2>
+      <p>Patron d'un restaurant maghrébin — 12 tables, 3 employés, ouvert midi et soir</p>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-val">~11h</div><div class="stat-lbl">journée de travail</div></div>
+    <div class="stat"><div class="stat-val">3</div><div class="stat-lbl">employés à gérer</div></div>
+    <div class="stat"><div class="stat-val">0h</div><div class="stat-lbl">de marketing / sem</div></div>
+  </div>
+
+  <div class="section-title">Sa journée — du réveil au coucher</div>
+  <div class="timeline">
+    <div class="time-block">
+      <div class="time-tag">06h30</div>
+      <div class="time-content">
+        <div class="time-label">Réveil tendu <span class="mood mood-ok">neutre</span></div>
+        <div class="time-desc">Check immédiat du téléphone. Est-ce qu'un employé a annulé ? Est-ce que le fournisseur a répondu ? Les pensées tournent avant même le café.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">07h15</div>
+      <div class="time-content">
+        <div class="time-label">Marché / fournisseurs <span class="mood mood-ok">variable</span></div>
+        <div class="time-desc">Commande les produits frais. Parfois une livraison ratée, des prix qui ont encore augmenté. Il renégocie à la volée, calcule mentalement la marge.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">09h00</div>
+      <div class="time-content">
+        <div class="time-label">Ouverture cuisine — préparation <span class="mood mood-good">bon moment</span></div>
+        <div class="time-desc">C'est son moment préféré. Seul en cuisine, il prépare. Il est dans son élément. La radio joue. Il reprend confiance.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">10h30</div>
+      <div class="time-content">
+        <div class="time-label">Arrivée du serveur — brief <span class="mood mood-ok">neutre</span></div>
+        <div class="time-desc">Donne les consignes du midi. Vérifie la caisse. Regarde si les réservations sont bien notées (souvent dans un carnet papier).</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">12h00</div>
+      <div class="time-content">
+        <div class="time-label">Service du midi — rush <span class="mood mood-bad">stressant</span></div>
+        <div class="time-desc">Commandes qui s'enchaînent, il cuisine ET sort parfois en salle. Un client mécontent, un plat qui part en retard — il gère tout en simultané. Pas le temps de souffler.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">14h30</div>
+      <div class="time-content">
+        <div class="time-label">Coupure — mais pas vraiment <span class="mood mood-ok">neutre</span></div>
+        <div class="time-desc">Mange rapidement, répond aux messages. Vérifie les avis Google postés dans la matinée. Un commentaire négatif ruine sa coupure. Essaie de faire une admin qu'il reporte depuis 3 jours.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">17h00</div>
+      <div class="time-content">
+        <div class="time-label">Relance pour le soir <span class="mood mood-ok">neutre</span></div>
+        <div class="time-desc">Prépare la mise en place du soir. Contacte ses fournisseurs si manque. Regarde si la salle est réservée — parfois 2 tables seulement le mardi, ça l'angoisse.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">19h00</div>
+      <div class="time-content">
+        <div class="time-label">Service du soir <span class="mood mood-good">meilleur moment</span></div>
+        <div class="time-desc">Ambiance plus cool qu'à midi. Quand la salle est pleine et que les clients repartent contents, il ressent une vraie fierté. Un habitué qui revient = carburant émotionnel.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">22h30</div>
+      <div class="time-content">
+        <div class="time-label">Fermeture — nettoyage <span class="mood mood-bad">épuisement</span></div>
+        <div class="time-desc">Aide à la plonge, vérifie la caisse, ferme. 16h de présence au total. Il rentre fatigué mais si la journée a bien tourné, il dort avec un sourire.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">23h30</div>
+      <div class="time-content">
+        <div class="time-label">Coucher — cerveau encore en marche <span class="mood mood-bad">difficile</span></div>
+        <div class="time-desc">Il pense déjà au lendemain. Revient mentalement sur ce qui a cloché. Son téléphone est son dernier écran — scroll Instagram sans but, regarde des restaus concurrents sans le vouloir.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote-box">
+    <p>"Le souci c'est pas de faire à manger, ça je maîtrise. Le souci c'est tout le reste — les avis, les réseaux, les no-shows... personne m'a appris tout ça."</p>
+    <span>— Ce qu'il dirait si tu lui demandais son plus grand problème</span>
+  </div>
+
+  <div class="two-col">
+    <div class="col-section">
+      <div class="section-title" style="padding:0 0 0.5rem;">Ce qui le plombe</div>
+      <div class="pill-list">
+        <div class="pill pill-bad">Employé absent sans prévenir</div>
+        <div class="pill pill-bad">Avis négatif injuste sur Google</div>
+        <div class="pill pill-bad">Salle à moitié vide un soir</div>
+        <div class="pill pill-bad">Fournisseur qui augmente ses prix</div>
+        <div class="pill pill-bad">Zéro temps pour faire du marketing</div>
+      </div>
+    </div>
+    <div class="col-section">
+      <div class="section-title" style="padding:0 0 0.5rem;">Ce qui le remonte</div>
+      <div class="pill-list">
+        <div class="pill pill-good">Un client qui revient pour la 3e fois</div>
+        <div class="pill pill-good">Salle pleine un soir de semaine</div>
+        <div class="pill pill-good">Un avis 5 étoiles bien écrit</div>
+        <div class="pill pill-good">Son plat signature demandé en extra</div>
+        <div class="pill pill-good">Un compliment d'un inconnu en salle</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dream-box">
+    <p>Son rêve profond : que son resto soit toujours plein le week-end ET le milieu de semaine. Avoir du temps libre le dimanche. Peut-être ouvrir un 2e établissement dans 5 ans. Et arrêter de faire la plonge lui-même.</p>
+  </div>
+</div>
+
+<!-- AVATAR 2 : NADIA -->
+<div id="av1" class="avatar-card hidden">
+  <div class="avatar-header">
+    <div class="avatar-pic" style="background:#FBEAF0;color:#993556;">ND</div>
+    <div class="avatar-info">
+      <h2>Nadia Rousseau, 35 ans</h2>
+      <p>Gérante d'un salon de coiffure — 3 fauteuils, 2 coiffeuses + elle, quartier résidentiel</p>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-val">~10h</div><div class="stat-lbl">journée de travail</div></div>
+    <div class="stat"><div class="stat-val">70%</div><div class="stat-lbl">clients fidèles</div></div>
+    <div class="stat"><div class="stat-val">Peu</div><div class="stat-lbl">de nouveaux clients</div></div>
+  </div>
+
+  <div class="section-title">Sa journée — du réveil au coucher</div>
+  <div class="timeline">
+    <div class="time-block">
+      <div class="time-tag">07h00</div>
+      <div class="time-content">
+        <div class="time-label">Réveil — organisation famille + boulot <span class="mood mood-ok">chargé</span></div>
+        <div class="time-desc">Prépare ses enfants pour l'école, dépose le plus jeune. Dans sa tête : le planning du salon se superpose au planning familial. Elle jongle déjà.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">08h45</div>
+      <div class="time-content">
+        <div class="time-label">Ouverture du salon <span class="mood mood-good">rituel positif</span></div>
+        <div class="time-desc">Allume les lumières, prépare les stations, met la musique. Ce moment calme avant les clientes, elle l'aime. C'est son salon, sa création.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">09h15</div>
+      <div class="time-content">
+        <div class="time-label">Première cliente — bavardage inclus <span class="mood mood-good">bon moment</span></div>
+        <div class="time-desc">Elle coiffe ET écoute les histoires de vie. C'est son côté humain fort. Les clientes repartent épanouies — pas juste pour les cheveux. Elle le sait, c'est sa différence.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">11h00</div>
+      <div class="time-content">
+        <div class="time-label">Imprévu : annulation dernière minute <span class="mood mood-bad">frustrant</span></div>
+        <div class="time-desc">Une cliente annule par SMS sans raison. Ce créneau vide = argent perdu. Elle n'ose pas toujours facturer. Elle espère que quelqu'un appellera pour combler.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">13h00</div>
+      <div class="time-content">
+        <div class="time-label">Pause — souvent 20 min en réalité <span class="mood mood-ok">courte</span></div>
+        <div class="time-desc">Mange vite dans l'arrière-boutique. Répond aux messages WhatsApp de clientes qui veulent un rendez-vous. Pas de système de réservation en ligne — tout passe par elle.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">14h00</div>
+      <div class="time-content">
+        <div class="time-label">Après-midi chargé — 3 clientes d'affilée <span class="mood mood-ok">dans le flow</span></div>
+        <div class="time-desc">Enchaîne les prestations. Quand c'est fluide, elle est dans son élément. Elle oublie les soucis. Les mains qui travaillent, les discussions qui vont bon train.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">17h30</div>
+      <div class="time-content">
+        <div class="time-label">Fin de journée — petits tracas admin <span class="mood mood-bad">pesant</span></div>
+        <div class="time-desc">Doit noter les encaissements, faire le compte de la caisse, commander des produits. Elle reporte souvent parce qu'elle est épuisée. L'admin s'accumule.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">18h30</div>
+      <div class="time-content">
+        <div class="time-label">Retour maison — mode maman <span class="mood mood-ok">coupure difficile</span></div>
+        <div class="time-desc">Elle bascule sur la vie de famille mais son téléphone reçoit encore des demandes de RDV. Elle répond "vite fait" depuis la cuisine. La frontière pro/perso est floue.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">21h30</div>
+      <div class="time-content">
+        <div class="time-label">Scroll Instagram — les concurrentes <span class="mood mood-bad">comparaison toxique</span></div>
+        <div class="time-desc">Voit des salons avec de belles photos, plein de followers, des avant/après parfaits. Se dit qu'elle devrait faire pareil. Commence à taper une légende, efface, abandonne. Dors frustrée.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote-box">
+    <p>"J'ai des clientes fidèles depuis des années, elles m'adorent. Mais pour attirer des nouvelles clientes, je sais pas quoi faire. Instagram c'est chronophage et je suis nulle pour ça."</p>
+    <span>— Sa vraie douleur</span>
+  </div>
+
+  <div class="two-col">
+    <div class="col-section">
+      <div class="section-title" style="padding:0 0 0.5rem;">Ce qui la plombe</div>
+      <div class="pill-list">
+        <div class="pill pill-bad">Annulations sans prévenir</div>
+        <div class="pill pill-bad">Pas de nouveaux clients réguliers</div>
+        <div class="pill pill-bad">Instagram qu'elle n'arrive pas à tenir</div>
+        <div class="pill pill-bad">Tout passe par son téléphone perso</div>
+        <div class="pill pill-bad">Se sentir dépassée par les salons "modernes"</div>
+      </div>
+    </div>
+    <div class="col-section">
+      <div class="section-title" style="padding:0 0 0.5rem;">Ce qui la remonte</div>
+      <div class="pill-list">
+        <div class="pill pill-good">Une cliente qui la recommande à une amie</div>
+        <div class="pill pill-good">Un résultat coloration qui impressionne</div>
+        <div class="pill pill-good">Planning complet toute la semaine</div>
+        <div class="pill pill-good">Une cliente qui dit "tu m'as sauvé la mise"</div>
+        <div class="pill pill-good">Son équipe qui s'entend bien</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dream-box">
+    <p>Son rêve : un salon reconnu dans le quartier, qu'elle n'ait plus à courir après les nouvelles clientes, et surtout — arrêter de gérer les RDV à la main. Un peu de temps libre le samedi après-midi.</p>
+  </div>
+</div>
+
+<!-- AVATAR 3 : PATRICK -->
+<div id="av2" class="avatar-card hidden">
+  <div class="avatar-header">
+    <div class="avatar-pic" style="background:#E1F5EE;color:#0F6E56;">PT</div>
+    <div class="avatar-info">
+      <h2>Patrick Merlin, 52 ans</h2>
+      <p>Patron d'une épicerie fine / cave à vin — seul aux commandes, 1 apprenti à mi-temps</p>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-val">~10h</div><div class="stat-lbl">en boutique / jour</div></div>
+    <div class="stat"><div class="stat-val">Faible</div><div class="stat-lbl">présence en ligne</div></div>
+    <div class="stat"><div class="stat-val">Méfiant</div><div class="stat-lbl">vis-à-vis du digital</div></div>
+  </div>
+
+  <div class="section-title">Sa journée — du réveil au coucher</div>
+  <div class="timeline">
+    <div class="time-block">
+      <div class="time-tag">07h00</div>
+      <div class="time-content">
+        <div class="time-label">Réveil calme — café + presse <span class="mood mood-good">son rituel sacré</span></div>
+        <div class="time-desc">Lit le journal papier. C'est son moment à lui. Il est posé, il pense. Regarde les nouvelles économiques — hausse des coûts, inflation — avec une inquiétude sourde.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">08h30</div>
+      <div class="time-content">
+        <div class="time-label">Ouverture + réception livraison <span class="mood mood-ok">routinier</span></div>
+        <div class="time-desc">Vérifie les colis, range la marchandise. Constate qu'une référence est manquante dans la commande. Appelle le fournisseur. Perd 30 minutes.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">10h00</div>
+      <div class="time-content">
+        <div class="time-label">Premiers clients du matin <span class="mood mood-good">dans son élément</span></div>
+        <div class="time-desc">Conseille, recommande un accord mets-vins, partage sa passion. Ces échanges sont la raison pour laquelle il a ouvert cette boutique. Il rayonne dans ces moments-là.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">12h00</div>
+      <div class="time-content">
+        <div class="time-label">Creux de la mi-journée <span class="mood mood-bad">anxiogène</span></div>
+        <div class="time-desc">Peu de passage. Il regarde la rue, compte les gens qui passent sans entrer. Se demande si son emplacement est toujours bon. La grande surface à 500m lui prend des clients, il le sait.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">13h30</div>
+      <div class="time-content">
+        <div class="time-label">Pause déjeuner — souvent seul <span class="mood mood-ok">solitaire</span></div>
+        <div class="time-desc">Son apprenti n'est pas là le midi. Il ferme la boutique 45 minutes. Mange en regardant son téléphone. Quelqu'un lui a envoyé un lien Facebook. Il regarde sans vraiment comprendre.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">15h00</div>
+      <div class="time-content">
+        <div class="time-label">Préparation commandes click & collect <span class="mood mood-bad">frustrant</span></div>
+        <div class="time-desc">Il a tenté de faire du click & collect pendant le COVID. Ça marchait bien. Mais il n'a jamais su communiquer dessus et ça s'est essoufflé. Il en parle comme d'un échec qu'il regrette.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">17h00</div>
+      <div class="time-content">
+        <div class="time-label">Rush de fin de journée <span class="mood mood-good">le vrai pic</span></div>
+        <div class="time-desc">Les actifs s'arrêtent en rentrant du boulot. C'est son meilleur moment commercial. Il vend bien, conseille vite. Le chiffre de la journée se fait souvent là. Il aime cette énergie.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">19h30</div>
+      <div class="time-content">
+        <div class="time-label">Fermeture + comptabilité rapide <span class="mood mood-ok">consciencieux</span></div>
+        <div class="time-desc">Compte la caisse, note les ventes dans un fichier Excel basique. Il est rigoureux mais lent sur l'outil. Son comptable lui a dit de se moderniser. Il a hoché la tête et n'a rien changé.</div>
+      </div>
+    </div>
+    <div class="time-block">
+      <div class="time-tag">21h00</div>
+      <div class="time-content">
+        <div class="time-label">Soirée — réflexion sur l'avenir <span class="mood mood-bad">existentiel</span></div>
+        <div class="time-desc">Depuis 2 ans, il se demande combien de temps il peut tenir face aux grandes surfaces et à Amazon. Il n'a pas de successeur. Il pense parfois à vendre mais son commerce c'est toute sa vie.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote-box">
+    <p>"Je veux bien me moderniser mais j'ai pas le temps d'apprendre. Et j'ai peur de dépenser de l'argent pour rien. J'ai déjà été déçu une fois avec un prestataire."</p>
+    <span>— Son objection principale avant même que tu parles</span>
+  </div>
+
+  <div class="two-col">
+    <div class="col-section">
+      <div class="section-title" style="padding:0 0 0.5rem;">Ce qui le plombe</div>
+      <div class="pill-list">
+        <div class="pill pill-bad">La concurrence des grandes surfaces</div>
+        <div class="pill pill-bad">Creux de fréquentation imprévisibles</div>
+        <div class="pill pill-bad">Mauvaise expérience avec un prestataire web</div>
+        <div class="pill pill-bad">Aucune visibilité en ligne maîtrisée</div>
+        <div class="pill pill-bad">Solitude du dirigeant — décide seul de tout</div>
+      </div>
+    </div>
+    <div class="col-section">
+      <div class="section-title" style="padding:0 0 0.5rem;">Ce qui le remonte</div>
+      <div class="pill-list">
+        <div class="pill pill-good">Un nouveau client converti en fidèle</div>
+        <div class="pill pill-good">Une vente de bouteille premium bien conseillée</div>
+        <div class="pill pill-good">Un avis Google qui mentionne son expertise</div>
+        <div class="pill pill-good">Un journaliste local qui parle de lui</div>
+        <div class="pill pill-good">Voir son apprenti progresser</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dream-box">
+    <p>Son rêve : que sa boutique devienne une référence locale connue de tous. Être la cave "où il faut aller" dans sa ville. Et peut-être, un jour, passer la main sans tout perdre — que quelqu'un continue son travail.</p>
+  </div>
+</div>
+
+</div>
+
+<script>
+function showAvatar(i) {
+  ['av0','av1','av2'].forEach((id, idx) => {
+    document.getElementById(id).classList.toggle('hidden', idx !== i);
+  });
+  document.querySelectorAll('.tab').forEach((t, idx) => {
+    t.classList.toggle('active', idx === i);
+  });
+}
+</script>
