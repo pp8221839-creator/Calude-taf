@@ -1,0 +1,141 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1.5rem 0;font-family:var(--font-sans)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.f-btn{padding:6px 14px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);font-size:12px;cursor:pointer;transition:all .15s}
+.f-btn.on{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary);font-weight:500}
+.count-bar{font-size:12px;color:var(--color-text-tertiary);margin-bottom:1rem}
+.grid{display:flex;flex-direction:column;gap:10px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;cursor:pointer;transition:border-color .15s}
+.card:hover{border-color:var(--color-border-primary)}
+.card-head{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.card-title{font-size:14px;font-weight:500;color:var(--color-text-primary);flex:1}
+.cat-badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;flex-shrink:0}
+.chevron{font-size:12px;color:var(--color-text-tertiary);flex-shrink:0;transition:transform .2s}
+.chevron.open{transform:rotate(180deg)}
+.card-body{padding:0 14px 14px;display:none;border-top:0.5px solid var(--color-border-tertiary);margin-top:0}
+.card-body.open{display:block}
+.pain-box{margin-top:12px;padding:10px 12px;border-radius:var(--border-radius-md);background:#FCEBEB;border-left:3px solid #F09595}
+.pain-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:#A32D2D;margin-bottom:4px}
+.pain-text{font-size:13px;color:#793A3A;line-height:1.5}
+.opp-box{margin-top:8px;padding:10px 12px;border-radius:var(--border-radius-md);background:#EAF3DE;border-left:3px solid #97C459}
+.opp-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:#3B6D11;margin-bottom:4px}
+.opp-text{font-size:13px;color:#27500A;line-height:1.5}
+.arg-box{margin-top:8px;padding:10px 12px;border-radius:var(--border-radius-md);background:#E6F1FB;border-left:3px solid #85B7EB}
+.arg-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:#185FA5;margin-bottom:4px}
+.arg-text{font-size:13px;color:#0C447C;line-height:1.5;font-style:italic}
+</style>
+
+<div class="wrap">
+<div class="filters" id="filters"></div>
+<div class="count-bar" id="cbar"></div>
+<div class="grid" id="grid"></div>
+</div>
+
+<script>
+const CATS = {
+  visibilite:  {label:"Visibilité",    dot:"#378ADD", badge:"#E6F1FB", badgeT:"#185FA5"},
+  clients:     {label:"Clients",       dot:"#D85A30", badge:"#FAECE7", badgeT:"#993C1D"},
+  temps:       {label:"Temps & énergie",dot:"#BA7517",badge:"#FAEEDA", badgeT:"#854F0B"},
+  reputation:  {label:"Réputation",    dot:"#D4537E", badge:"#FBEAF0", badgeT:"#993556"},
+  concurrence: {label:"Concurrence",   dot:"#534AB7", badge:"#EEEDFE", badgeT:"#3C3489"},
+  argent:      {label:"Argent & ROI",  dot:"#0F6E56", badge:"#E1F5EE", badgeT:"#085041"},
+  gestion:     {label:"Gestion interne",dot:"#888780",badge:"#F1EFE8", badgeT:"#5F5E5A"},
+};
+
+const DATA = [
+  {cat:"visibilite", pain:"Invisible sur Google — les gens ne les trouvent pas quand ils cherchent", opp:"Apparaître dans le top 3 des résultats locaux = flux de nouveaux clients automatique et gratuit", arg:'"La plupart de vos futurs clients vous cherchent sur Google avant même de passer devant votre vitrine. Aujourd\'hui, qu\'est-ce qu\'ils trouvent ?"'},
+  {cat:"visibilite", pain:"Page Google My Business non optimisée ou abandonnée — photos floues, horaires faux, zéro description", opp:"Une fiche GMB bien tenue = levier de confiance immédiat + boost de référencement local", arg:'"J\'ai regardé votre fiche Google avant d\'appeler — il y a des choses simples qui font fuir des clients sans que vous le sachiez."'},
+  {cat:"visibilite", pain:"Aucune présence cohérente sur les réseaux — compte créé mais jamais alimenté, ou inexistant", opp:"Une page active et régulière = fenêtre permanente sur la communauté locale, 24h/24", arg:'"Vos concurrents publient 3 à 4 fois par semaine. Vous, vous êtes absent. Pour vos futurs clients, ça veut dire que vous existez à peine."'},
+  {cat:"visibilite", pain:"Site web inexistant ou obsolète — souvent fait en 2012, non mobile, jamais mis à jour", opp:"Un site clair et rapide = crédibilité instantanée + capture de leads potentiels", arg:'"Aujourd\'hui 70% des recherches locales se font sur téléphone. Si votre site n\'est pas mobile, vous perdez ces gens avant même qu\'ils arrivent."'},
+  {cat:"clients", pain:"Manque de nouveaux clients réguliers — la base fidèle vieillit, pas assez de renouvellement", opp:"Stratégie de contenu ciblée pour attirer un nouveau public local en continu", arg:'"Vos clients fidèles, c\'est votre socle. Mais si vous n\'en attirez pas de nouveaux, dans 3 ans votre carnet est vide. On peut changer ça."'},
+  {cat:"clients", pain:"Zéro système pour récupérer les clients perdus ou inactifs — aucun suivi, aucune relance", opp:"Campagnes de réactivation via réseaux ou email = chiffre d'affaires dormant à réveiller", arg:'"Vous avez des anciens clients qui ont adoré ce que vous faites et sont juste... partis. Pas parce qu\'ils n\'aiment plus, mais parce que vous n\'avez pas repris contact."'},
+  {cat:"clients", pain:"Dépendance au bouche-à-oreille uniquement — ça marche, mais ça ne se contrôle pas", opp:"Amplifier et digitaliser le bouche-à-oreille pour le rendre systématique et mesurable", arg:'"Le bouche-à-oreille c\'est bien, mais ça repose sur le hasard. Moi je vous propose de le rendre prévisible."'},
+  {cat:"clients", pain:"Forte saisonnalité — creux durs à anticiper et à remplir (lundi vide, janvier mort, etc.)", opp:"Contenu ciblé et offres promotionnelles digitales pour booster les périodes creuses", arg:'"Vos concurrents qui ont des réseaux actifs, ils remplissent leur lundi avec une story le dimanche soir. Vous pouvez faire pareil."'},
+  {cat:"temps", pain:"Aucun temps pour gérer les réseaux sociaux — patron débordé, toujours au four et au moulin", opp:"Déléguer 100% de la gestion digitale = récupérer du temps pour le vrai métier", arg:'"Je ne vous demande pas une heure de plus par semaine. Je prends tout ça, vous faites votre métier, moi je fais le mien."'},
+  {cat:"temps", pain:"Tentatives ratées de gérer seul Instagram — abandon au bout de 3 posts par manque de régularité", opp:"La régularité est exactement ce qu'on apporte — c'est notre valeur centrale", arg:'"Vous avez sûrement essayé de poster vous-même. Le problème c\'est pas la volonté, c\'est le temps. C\'est exactement pour ça que j\'existe."'},
+  {cat:"temps", pain:"Énergie épuisée en fin de journée — plus aucune capacité mentale pour penser stratégie ou marketing", opp:"Un prestataire qui gère = libère de la bande passante mentale, pas juste du temps", arg:'"À 22h après un service, personne n\'a envie de rédiger une légende Instagram. Moi si, parce que c\'est mon job."'},
+  {cat:"reputation", pain:"Avis négatifs non gérés — réponses absentes ou maladroites qui empirent la situation", opp:"Stratégie de gestion des avis + incitation aux avis positifs = e-réputation maîtrisée", arg:'"Un avis 1 étoile sans réponse, ça dit aux gens que vous vous en foutez. Une bonne réponse peut retourner la situation complètement."'},
+  {cat:"reputation", pain:"Trop peu d'avis Google malgré des clients satisfaits — les gens contents oublient de laisser un avis", opp:"Système d'activation des avis = volume et score moyen qui montent en quelques semaines", arg:'"Vos bons clients, ils pensent à vous recommander à leurs amis mais ils oublient de le laisser écrit. On peut automatiser ça."'},
+  {cat:"reputation", pain:"Image en ligne qui ne reflète pas la qualité réelle du commerce — beau produit, mauvaise vitrine digitale", opp:"Contenu visuel professionnel qui montre enfin ce que le commerce vaut vraiment", arg:'"Ce que vous faites mérite d\'être vu. Là, en ligne, ça ne vous représente pas. On change ça."'},
+  {cat:"concurrence", pain:"Concurrents plus visibles en ligne malgré une offre inférieure — frustration de se faire doubler", opp:"Rattraper et dépasser le concurrent visible = l'argument qui motive l'action immédiate", arg:'"Votre concurrent d\'en face a 400 abonnés Instagram et publie 3 fois par semaine. Vous avez sûrement un meilleur produit. Il est juste plus visible."'},
+  {cat:"concurrence", pain:"Pression des grandes enseignes et plateformes (Deliveroo, Treatwell...) qui captent leur clientèle", opp:"Construire sa propre audience = ne plus dépendre de plateformes qui prennent 30% de commission", arg:'"Chaque commande sur Deliveroo, vous payez une commission. Chaque client qui vous suit sur Instagram, c\'est à vous. Pour toujours."'},
+  {cat:"concurrence", pain:"Nouveaux commerces du quartier plus jeunes et plus digitaux qui volent de l'attention", opp:"Se positionner comme la référence établie ET moderne du secteur local", arg:'"Le nouveau resto qui vient d\'ouvrir en face — il a déjà 600 abonnés. Vous êtes là depuis 8 ans. C\'est vous qui devriez avoir cette audience."'},
+  {cat:"argent", pain:"Mauvaise expérience passée avec une agence ou un freelance — argent dépensé, zéro résultat", opp:"Approche résultats d'abord, confiance ensuite — montrer avant de facturer pleinement", arg:'"Je comprends la méfiance. Si vous voulez, on commence sur une courte période avec un objectif précis, et vous jugez sur pièce."'},
+  {cat:"argent", pain:"Incapacité à mesurer le retour sur investissement du marketing — ils ont peur de jeter l'argent", opp:"Reporting clair et régulier = ils voient exactement ce que leur argent produit", arg:'"Chaque mois je vous envoie un rapport simple : combien de personnes vous ont vu, combien ont cliqué, combien sont venus. Vous décidez si ça vaut le coup."'},
+  {cat:"argent", pain:"Budget serré, pas de marge pour des dépenses incertaines — priorité à ce qui est urgent", opp:"ROI démontrable rapidement = l'investissement se justifie en quelques semaines", arg:'"Je ne vous parle pas d\'une grosse dépense. Je vous parle de remplir 3 tables de plus par semaine. Faites le calcul — c\'est rentabilisé en 15 jours."'},
+  {cat:"gestion", pain:"Tout repose sur le patron — si lui tombe malade ou prend des vacances, tout s'arrête", opp:"Une présence digitale autonome = le commerce existe en ligne même quand le patron souffler", arg:'"Quand vous fermez une semaine, votre Instagram peut continuer à travailler pour vous. Vos concurrents, eux, continuent de poster."'},
+  {cat:"gestion", pain:"Aucun outil de suivi client — tout est dans la tête ou dans un carnet papier", opp:"Une présence digitale active crée naturellement une base de données d'audience", arg:'"Chaque abonné Instagram ou Facebook, c\'est un client potentiel que vous pouvez recontacter demain. C\'est votre fichier client digital."'},
+  {cat:"gestion", pain:"Frontière pro/perso floue — le téléphone du patron = SAV, réservations, marketing et vie privée", opp:"Externaliser le digital = reprendre le contrôle de son temps et séparer les casquettes", arg:'"Vous recevez des DM de clientes à 23h et vous répondez parce que vous pouvez pas vous en empêcher. Moi je gère ça pour vous."'},
+];
+
+let active = new Set(Object.keys(CATS));
+let openIdx = null;
+
+function render(){
+  const filtered = DATA.filter(d=>active.has(d.cat));
+  document.getElementById('cbar').textContent = filtered.length + ' levier' + (filtered.length>1?'s':'') + ' de closing identifié' + (filtered.length>1?'s':'');
+  const g = document.getElementById('grid');
+  g.innerHTML = '';
+  filtered.forEach((item, i) => {
+    const c = CATS[item.cat];
+    const isOpen = openIdx === item.pain;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-head">
+        <div class="cat-dot" style="background:${c.dot}"></div>
+        <div class="card-title">${item.pain}</div>
+        <div class="cat-badge" style="background:${c.badge};color:${c.badgeT}">${c.label}</div>
+        <div class="chevron${isOpen?' open':''}">&#9660;</div>
+      </div>
+      <div class="card-body${isOpen?' open':''}">
+        <div class="pain-box">
+          <div class="pain-label">La douleur concrète</div>
+          <div class="pain-text">${item.pain}</div>
+        </div>
+        <div class="opp-box">
+          <div class="opp-label">L'opportunité pour toi</div>
+          <div class="opp-text">${item.opp}</div>
+        </div>
+        <div class="arg-box">
+          <div class="arg-label">Argument à placer au téléphone</div>
+          <div class="arg-text">${item.arg}</div>
+        </div>
+      </div>
+    `;
+    card.addEventListener('click', ()=>{
+      openIdx = isOpen ? null : item.pain;
+      render();
+    });
+    g.appendChild(card);
+  });
+}
+
+function renderFilters(){
+  const f = document.getElementById('filters');
+  f.innerHTML = '';
+  const allBtn = document.createElement('button');
+  allBtn.className = 'f-btn' + (active.size===Object.keys(CATS).length?' on':'');
+  allBtn.textContent = 'Toutes les douleurs';
+  allBtn.onclick = ()=>{active = new Set(Object.keys(CATS)); openIdx=null; renderFilters(); render();};
+  f.appendChild(allBtn);
+  Object.entries(CATS).forEach(([k,v])=>{
+    const btn = document.createElement('button');
+    btn.className = 'f-btn' + (active.has(k) && active.size===1?' on':'');
+    btn.textContent = v.label;
+    btn.style.borderLeftColor = v.dot;
+    btn.onclick = ()=>{
+      if(active.size===1 && active.has(k)){active = new Set(Object.keys(CATS));}
+      else{active = new Set([k]);}
+      openIdx=null; renderFilters(); render();
+    };
+    f.appendChild(btn);
+  });
+}
+
+renderFilters();
+render();
+</script>
